@@ -89,6 +89,7 @@ void loop() {
   intFlag = false;
 
   // Display time
+  Serial.print("t:");
   Serial.print(millis() - ti, DEC);
   Serial.print("\t");
 
@@ -123,26 +124,29 @@ void loop() {
   // Display values
 
   // Accelerometer
+  Serial.print("ax:");
   Serial.print(ax, DEC);
   Serial.print("\t");
+  Serial.print("ay:");
   Serial.print(ay, DEC);
   Serial.print("\t");
+  Serial.print("az:");
   Serial.print(az, DEC);
   Serial.print("\t");
 
   // Gyroscope
+  Serial.print("gx:");
   Serial.print(gx, DEC);
   Serial.print("\t");
+  Serial.print("gy:");
   Serial.print(gy, DEC);
   Serial.print("\t");
+  Serial.print("gz:");
   Serial.print(gz, DEC);
   Serial.print("\t");
 
-
   // _____________________
   // :::  Magnetometer :::
-
-
   // Read register Status 1 and wait for the DRDY: Data Ready
 
   uint8_t ST1;
@@ -164,10 +168,13 @@ void loop() {
 
 
   // Magnetometer
+  Serial.print("mx:");
   Serial.print(mx + 200, DEC);
   Serial.print("\t");
+  Serial.print("my:");
   Serial.print(my - 70, DEC);
   Serial.print("\t");
+  Serial.print("mz:");
   Serial.print(mz - 700, DEC);
   Serial.print("\t");
 

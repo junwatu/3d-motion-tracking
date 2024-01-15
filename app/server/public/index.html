@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Babylon.js Sensor Visualization</title>
+	<script src="https://cdn.babylonjs.com/babylon.js"></script>
+	<style>
+		html,
+		body {
+			width: 100%;
+			height: 100%;
+			padding: 0;
+			margin: 0;
+		}
+
+		#renderCanvas {
+			width: 100%;
+			height: 100%;
+		}
+	</style>
+</head>
+
+<body>
+	<canvas id="renderCanvas"></canvas>
+	<script>
+		// Initialize Babylon.js Scene
+		var canvas = document.getElementById('renderCanvas');
+		var engine = new BABYLON.Engine(canvas, true);
+
+		var createScene = function () {
+			var scene = new BABYLON.Scene(engine);
+
+			var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 2, BABYLON.Vector3.Zero(), scene);
+			camera.attachControl(canvas, true);
+
+			var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
+			var box = new BABYLON.MeshBuilder.CreateBox("box", {}, scene);
+			box.rotationQuaternion = new BABYLON.Quaternion();  // Initialize rotation quaternion
+
+			return { scene, box };
+		};
+
+		var { scene, box } = createScene();
+		engine.runRenderLoop(function () {
+			scene.render();
+		});
+
+		// Function to Update Box (Cube) Orientation and Position with Easing
+		function updateDevice(accelData, gyroData, magData, box, easingFactor) {
+
+			// Convert gyro data to quaternion
+			var targetRotationQuaternion = BABYLON.Quaternion.RotationYawPitchRoll(
+				gyroData.y * Math.PI / 180, // Assuming the gyro data is in degrees
+				gyroData.x * Math.PI / 180,
+				gyroData.z * Math.PI / 180
+			);
+
+			// SLERP for rotation
+			BABYLON.Quaternion.SlerpToRef(
+				box.rotationQuaternion,
+				targetRotationQuaternion,
+				easingFactor,
+				box.rotationQuaternion
+			);
+
+			// LERP for position
+			//box.position.x += (accelData.x - box.position.x) * easingFactor;
+			//box.position.y += (accelData.y - box.position.y) * easingFactor;
+			//box.position.z += (accelData.z - box.position.z) * easingFactor;
+
+			// Magnetometer data can be used similarly if needed
+		}
+
+
+		// WebSocket connection to receive sensor data
+		const socket = new WebSocket('ws://localhost:3000');
+		socket.addEventListener('message', function (event) {
+			const sensorData = JSON.parse(event.data);
+			const easingFactor = 0.5; // Adjust this value for smoother or faster response
+			updateDevice(sensorData.accel, sensorData.gyro, sensorData.mag, box, easingFactor);
+		});
+
+		window.addEventListener('resize', function () {
+			engine.resize();
+		});
+	</script>
+</body>
+</html>
