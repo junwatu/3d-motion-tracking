@@ -70,14 +70,9 @@ void setup() {
   Timer1.initialize(10000);          // initialize timer1, and set a 1/2 second period
   Timer1.attachInterrupt(callback);  // attaches callback() as a timer overflow interrupt
 
-
   // Store initial time
   ti = millis();
 }
-
-
-
-
 
 // Counter
 long int cpt = 0;
@@ -96,7 +91,6 @@ void loop() {
   // Display time
   Serial.print(millis() - ti, DEC);
   Serial.print("\t");
-
 
   // _______________
   // ::: Counter :::
@@ -176,8 +170,6 @@ void loop() {
   Serial.print("\t");
   Serial.print(mz - 700, DEC);
   Serial.print("\t");
-
-
 
   // End of line
   Serial.println("");
