@@ -1,5 +1,7 @@
 # Building a 3D Motion Tracker: Integrating IMU, Arduino, Babylon.js, and GridDB
 
+![blog cover](images/cover.png)
+
 ## Introduction
 
 Briefly introduce the concept of a 3D motion tracker, its applications, and an overview of how IMU, Arduino, Babylon.js, Node.js, WebSocket, and GridDB are integrated in this project.
