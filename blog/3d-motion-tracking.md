@@ -4,7 +4,7 @@
 
 ## Introduction
 
-Briefly introduce the concept of a 3D motion tracker, its applications, and an overview of how IMU, Arduino, Babylon.js, Node.js, WebSocket, and GridDB are integrated in this project.
+In this tutorial, we will build a 3D motion tracker that can visualize the motion of an object in real-time. The motion data is collected from an IMU sensor and Arduino Uno, processed in Node.js, and visualized in Babylon.js. The data is also stored in GridDB for future analysis.
 
 ## Requirements and Setup
 
