@@ -1,1 +1,4 @@
-# Developing an Advanced 3D Motion Tracking System with Arduino, Node.js, Unity, and GridDB
+# Building a 3D Motion Tracker: Integrating IMU, Arduino, Babylon.js, and GridDB
+
+## Introduction
+
