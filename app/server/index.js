@@ -30,28 +30,33 @@ const broadcastData = (data) => {
 	});
 };
 
-function parseSensorData(dataString) {
-	//console.log(dataString);
-	const values = dataString.split('\t').map(val => val.split(':')[1]);
+function parseSensorData(data) {
+	// Parse the data string
+	const sensorValues = data.split('\t').map(val => parseFloat(val.split(':')[1]));
 
-	return {
-		time: parseInt(values[0], 10), // Extracting the timestamp
-		accel: {
-			x: parseInt(values[1], 10),
-			y: parseInt(values[2], 10),
-			z: parseInt(values[3], 10)
-		},
-		gyro: {
-			x: parseInt(values[4], 10),
-			y: parseInt(values[5], 10),
-			z: parseInt(values[6], 10)
-		},
-		mag: {
-			x: parseInt(values[7], 10),
-			y: parseInt(values[8], 10),
-			z: parseInt(values[9], 10)
-		}
+	// Assuming the order of the data is ax, ay, az, gx, gy, gz, mx, my, mz
+	const [ax, ay, az, gx, gy, gz, mx, my, mz, s] = sensorValues;
+
+	// Normalize accelerometer data if needed (currently in m/s², convert to g's if necessary)
+	const accel = {
+		x: ax / 1000,
+		y: ay / 1000,
+		z: az / 1000
 	};
+
+	// Gyroscope data is in rad/s, which is what the Madgwick filter expects, so no conversion needed
+	const gyro = { x: gx, y: gy, z: gz };
+
+	// Magnetometer data is in microteslas (uT), convert to Teslas by dividing by 1,000,000 if necessary
+	const mag = {
+		x: mx / 1000000,
+		y: my / 1000000,
+		z: mz / 1000000
+	};
+
+	const temp = { s }
+
+	return { accel, gyro, mag, s };
 }
 
 // Serial port setup
@@ -59,8 +64,8 @@ const port = new SerialPort({ path: 'COM5', baudRate: 115200 });
 const parser = port.pipe(new ReadlineParser({ delimiter: '\n' }));
 
 parser.on('data', (data) => {
+	console.log(data);
 	const parsedData = parseSensorData(data);
-	console.log(parsedData);
 	broadcastData(JSON.stringify(parsedData));
 });
 

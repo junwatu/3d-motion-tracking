@@ -2,133 +2,56 @@
 <html>
 
 <head>
-	<title>3D Object Movement Simulation</title>
+	<meta charset="utf-8" />
+	<title>3D Sensor Visualization</title>
+	<script src="https://cdn.babylonjs.com/babylon.js"></script>
 	<style>
-		body {
-			margin: 0;
-		}
-
-		canvas {
-			display: block;
+		#renderCanvas {
+			width: 100%;
+			height: 100vh;
+			touch-action: none;
 		}
 	</style>
 </head>
 
 <body>
-	<script src="https://threejs.org/build/three.js"></script>
-	<!-- Include the AHRS library -->
-	<script src="/www-ahrs.js"></script>
+	<canvas id="renderCanvas"></canvas>
 	<script>
-		window.onload = function () {
-			let scene, camera, renderer, object3D;
-			let madgwick;
-			let previousQuaternion = new THREE.Quaternion();  // Store the previous quaternion
-			let lerpFactor = 0.02;  // Adjust this value to control the smoothness
+		window.addEventListener('DOMContentLoaded', () => {
+			const canvas = document.getElementById('renderCanvas');
+			const engine = new BABYLON.Engine(canvas, true);
 
+			const createScene = () => {
+				const scene = new BABYLON.Scene(engine);
+				const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 10, new BABYLON.Vector3(0, 0, 0), scene);
+				camera.attachControl(canvas, true);
+				new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 1, 0), scene);
+				const box = BABYLON.MeshBuilder.CreateBox("box", { size: 2 }, scene);
+				return { scene, box };
+			};
 
-			function init() {
-				scene = new THREE.Scene();
-				camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-				renderer = new THREE.WebGLRenderer();
-				renderer.setSize(window.innerWidth, window.innerHeight);
-				document.body.appendChild(renderer.domElement);
+			const { scene, box } = createScene();
 
-				const geometry = new THREE.BoxGeometry();
-				const materials = [
-					new THREE.MeshStandardMaterial({ color: 0xff3333 }), // Red
-					// Continue with different materials for each face
-					new THREE.MeshStandardMaterial({ color: 0x33ff33 }), // Green
-					new THREE.MeshStandardMaterial({ color: 0x3333ff }), // Blue
-					new THREE.MeshStandardMaterial({ color: 0xffff33 }), // Yellow
-					new THREE.MeshStandardMaterial({ color: 0x33ffff }), // Cyan
-					new THREE.MeshStandardMaterial({ color: 0xff33ff })  // Magenta
-				];
+			const ws = new WebSocket('ws://localhost:3000');
+			ws.onmessage = (event) => {
+				const sensorData = JSON.parse(event.data);
+				const { gyro } = sensorData;
 
-				object3D = new THREE.Mesh(geometry, materials); // Apply the materials to the cube
-				scene.add(object3D);
+				// Update cube rotation with gyro data in radians/s
+				// Assume you're receiving data at a rate of 60Hz (or adjust as per your rate)
+				box.rotation.x += gyro.x / 10; // Update rotation based on gyro data
+				box.rotation.y += gyro.y / 10;
+				box.rotation.z += gyro.z / 10;
+			};
 
-				// Add ambient light
-				const ambientLight = new THREE.AmbientLight(0x404040); // Soft white light
-				scene.add(ambientLight);
+			engine.runRenderLoop(() => {
+				scene.render();
+			});
 
-				// Add directional light
-				const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5); // White directional light
-				directionalLight.position.set(0, 1, 0); // Position the light above the cube
-				scene.add(directionalLight);
-
-				camera.position.z = 5;
-
-				// Initialize Madgwick filter for sensor fusion
-				madgwick = new AHRS({
-					sampleInterval: 115200, // Adjust this based on your sensor's sampling rate
-					algorithm: 'Madgwick',
-					beta: 0.1 // Adjust this parameter based on trial and error for stability vs responsiveness
-				});
-
-				console.log(madgwick.get)
-
-				// Setup WebSocket
-				const socket = new WebSocket('ws://localhost:3000');
-				socket.onmessage = function (event) {
-					const sensorData = JSON.parse(event.data);
-					const quaternion = processSensorData(sensorData);
-					object3D.quaternion.set(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
-				};
-
-				animate();
-			}
-
-			function processSensorData(data) {
-				// Normalize accelerometer data (±4g FSR)
-				const accel = {
-					x: data.accel.x / 8192.0,
-					y: data.accel.y / 8192.0,
-					z: data.accel.z / 8192.0
-				};
-
-				// Normalize gyro data (±1000°/s FSR)
-				const gyro = {
-					x: (data.gyro.x / 32.8) * (Math.PI / 180),
-					y: (data.gyro.y / 32.8) * (Math.PI / 180),
-					z: (data.gyro.z / 32.8) * (Math.PI / 180)
-				};
-
-				// Assuming magnetometer data is fine as is, or add your own calibration logic
-				const mag = {
-					x: data.mag.x + 200,
-					y: data.mag.y - 70,
-					z: data.mag.z - 700
-				};
-
-				// Update Madgwick filter with current sensor data
-				madgwick.update(
-					data.gyro.x, data.gyro.y, data.gyro.z, // Gyro data in radians per second
-					data.accel.x, data.accel.y, data.accel.z, // Accelerometer data in g's
-					data.mag.x, data.mag.y, data.mag.z // Magnetometer data
-				);
-
-				// Get quaternion from Madgwick filter
-				const newQuaternion = madgwick.getQuaternion();
-				// Lerp (Linear Interpolation) for smooth transition
-				previousQuaternion.slerp(new THREE.Quaternion(newQuaternion.x, newQuaternion.y, newQuaternion.z, newQuaternion.w), lerpFactor);
-
-				// Update the object's quaternion
-				object3D.quaternion.copy(previousQuaternion);
-
-				// Save the new quaternion as the previous one for the next frame
-				previousQuaternion.copy(object3D.quaternion);
-				// Return quaternion as THREE.Quaternion
-				return object3D.quaternion;
-			}
-
-			function animate() {
-				requestAnimationFrame(animate);
-				renderer.render(scene, camera);
-			}
-
-			// Initialize the scene
-			init();
-		};
+			window.addEventListener('resize', () => {
+				engine.resize();
+			});
+		});
 	</script>
 </body>
 
