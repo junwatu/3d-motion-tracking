@@ -10,7 +10,7 @@ In this tutorial, we will build a 3D motion tracker that can visualize the motio
 
 ### IMU sensor
 
-An IMU sensor, or Inertial Measurement Unit sensor is a device that measures the motion, orientation, and environmental conditions of an object. It consists of an accelerometer, gyroscope, and magnetometer. The accelerometer measures the acceleration of the object, the gyroscope measures the angular velocity, and the magnetometer measures the magnetic field. The IMU sensor used in this project is the [MPU-9250](https://invensense.tdk.com/download-pdf/mpu-9250-datasheet/).
+An IMU sensor, or Inertial Measurement Unit sensor is a device that measures the motion, orientation, and environmental conditions of an object. It consists of an **accelerometer**, **gyroscope**, and **magnetometer**. The accelerometer measures the acceleration of the object, the gyroscope measures the angular velocity, and the magnetometer measures the magnetic field. The IMU sensor used in this project is the [MPU-9250](https://invensense.tdk.com/download-pdf/mpu-9250-datasheet/).
 
 [//]: # (put GY-91 device screenshot here)
 
@@ -44,8 +44,25 @@ GridDB is used to store the motion data from the IMU sensor for future analysis.
 
 ### Setting up the hardware
 
+The IMU sensor is connected to the Arduino Uno using the I2C interface. The device interconnection is shown in the following diagram:
+
+[//]: # (put device interconnection diagram here)
+![imu arduino breadboard](images/imu-arduino-uno.png)
+
+The connections are as follows:
+
+| Arduino Uno Pin | GY-91 IMU Sensor Pin |
+|-----------------|-------------------|
+| 3.3V            | VCC               |
+| GND             | GND               |
+| A4 (SDA)        | SDA               |
+| A5 (SCL)        | SCL               |
+
+To program the Arduino Uno, it is need to be connected to the computer using the USB cable.
 
 ### Setting up the development environment.
+
+[//]: # (Clearly brief explanation of the development environment setup)
 
 ## IMU and Arduino Integration
 
