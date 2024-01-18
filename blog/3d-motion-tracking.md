@@ -6,11 +6,14 @@
 
 In this tutorial, we will build a 3D motion tracker that can visualize the motion of an object in real-time. The motion data is collected from an IMU sensor and Arduino Uno, processed in Node.js, and visualized in Babylon.js. The data is also stored in GridDB for future analysis.
 
-## Requirements and Setup
+## Hardware Requirements
 
-- **Hardware Requirements:**
-  - IMU sensor
-  - Arduino board
+### IMU sensor
+
+IMU sensor is a device that measures the motion, orientation, and environmental conditions of an object. It consists of an accelerometer, gyroscope, and magnetometer. The accelerometer measures the acceleration of the object, the gyroscope measures the angular velocity, and the magnetometer measures the magnetic field. The IMU sensor used in this project is the [MPU-9250](https://invensense.tdk.com/download-pdf/mpu-9250-datasheet/).
+
+### Arduino board
+
 - **Software Requirements:**
   - Babylon.js
   - GridDB
