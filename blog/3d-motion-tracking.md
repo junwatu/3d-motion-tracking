@@ -10,7 +10,7 @@ In this tutorial, we will build a 3D motion tracker that can visualize the motio
 
 ### IMU sensor
 
-IMU sensor is a device that measures the motion, orientation, and environmental conditions of an object. It consists of an accelerometer, gyroscope, and magnetometer. The accelerometer measures the acceleration of the object, the gyroscope measures the angular velocity, and the magnetometer measures the magnetic field. The IMU sensor used in this project is the [MPU-9250](https://invensense.tdk.com/download-pdf/mpu-9250-datasheet/).
+An IMU sensor, or Inertial Measurement Unit sensor is a device that measures the motion, orientation, and environmental conditions of an object. It consists of an accelerometer, gyroscope, and magnetometer. The accelerometer measures the acceleration of the object, the gyroscope measures the angular velocity, and the magnetometer measures the magnetic field. The IMU sensor used in this project is the [MPU-9250](https://invensense.tdk.com/download-pdf/mpu-9250-datasheet/).
 
 [//]: # (put GY-91 device screenshot here)
 
@@ -20,17 +20,32 @@ In this project, we use [Arduino Uno](https://docs.arduino.cc/hardware/uno-rev3/
 
 [//]: # (put Arduino Uno board screenshot here)
 
-The Arduino Uno is programmed using the [Arduino Software (IDE)](https://docs.arduino.cc/software/ide-v2/tutorials/getting-started-ide-v2/). Please follow the [official guide](https://docs.arduino.cc/software/ide-v2/tutorials/getting-started/ide-v2-downloading-and-installing/) to install the Arduino IDE on your computer.
-
-
 ## Software Requirements
 
-  - Babylon.js
-  - GridDB
-  - Node.js
-  - WebSocket
-- **Initial Setup Instructions:**
-  - Setting up the development environment.
+These are the main software components used in this project:
+
+### Arduino IDE
+
+The Arduino Uno is programmed using the [Arduino Software (IDE)](https://docs.arduino.cc/software/ide-v2/tutorials/getting-started-ide-v2/). Please follow the [official guide](https://docs.arduino.cc/software/ide-v2/tutorials/getting-started/ide-v2-downloading-and-installing/) to install the Arduino IDE on your computer.
+
+### Node.js
+
+Node.js is an open-source, cross-platform, JavaScript runtime environment that executes JavaScript code outside a web browser. It is used to build scalable network applications. Please follow the [official guide](https://nodejs.org/en/download/) to install Node.js on your computer.
+
+Node.js is used as a server to process the motion data from the IMU sensor, store to database and send it to the web browser.
+
+### GridDB
+
+GridDB is an open-source, in-memory NoSQL database for IoT and big data applications. It is optimized for time-series data and geospatial data. Please follow the [official guide](https://griddb.org/docs/install-and-setup/) to install GridDB on your computer.
+
+GridDB is used to store the motion data from the IMU sensor for future analysis.
+
+## Initial Setup Instructions
+
+### Setting up the hardware
+
+
+### Setting up the development environment.
 
 ## IMU and Arduino Integration
 
