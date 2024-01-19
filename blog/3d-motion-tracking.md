@@ -45,6 +45,33 @@ GridDB is used to store the motion data from the IMU sensor for future analysis.
 
 ### Setting up the hardware
 
+These are the Bill of Materials (BOM) for this project:
+
+| Item                         | Quantity | Description                                  |
+|------------------------------|----------|----------------------------------------------|
+| Arduino Uno Board            | 1        | Microcontroller platform for the project.    |
+| GY-91 IMU Sensor Module      | 1        | Provides inertial measurement data.          |
+| USB Cable                    | 1        | Connects Arduino to a computer for power and programming. |
+| Jumper Wires                 | 4        | 2 for power, 2 for I2C communication.        |
+| Breadboard                   | 1        | Platform for prototyping and testing circuits. |
+
+> Depending on your IMU sensor module, you may need to solder header pins to the module. You'll need a soldering iron and lead or lead-free solder for this task.
+
+There is no need to provide stand-alone power supply because the IMU sensor module and Arduino Uno will be powered by the USB cable from the computer. The interconnection between the IMU sensor module and Arduino Uno will be done using the jumper wires.
+
+### Setting up the development environment
+
+[//]: # (Clearly brief explanation of the development environment setup)
+Open the Arduino IDE and import the `MPU9250.zip` library package into the IDE. The package can be downloaded from [here](https://github.com/junwatu/3d-motion-tracking/raw/main/app/hardware/MPU9250.zip).
+
+To import the library, go to `Sketch > Include Library > Add .ZIP Library...` and select the `MPU9250.zip` file.
+
+![import zip library](images/add-library-mpu9250-zip.png)
+
+## IMU and Arduino Integration
+
+### Connecting the IMU sensor with Arduino
+
 The IMU sensor is connected to the Arduino Uno using the I2C interface. The device interconnection is shown in the following diagram:
 
 [//]: # (put device interconnection diagram here)
@@ -59,16 +86,81 @@ The connections are as follows:
 | A4 (SDA)        | SDA               |
 | A5 (SCL)        | SCL               |
 
-To program the Arduino Uno, it is need to be connected to the computer using the USB cable.
+Please remember to program the Arduino Uno. It needs to be connected to the computer using the USB cable.
 
-### Setting up the development environment.
+### Reading sensor data using Arduino
 
-[//]: # (Clearly brief explanation of the development environment setup)
+To read sensor data using from Arduino, we need to porgram the Arduino first. Create a new sketch then copy and paste the following code into the sketch:
 
-## IMU and Arduino Integration
+```arduino
+#include "MPU9250.h"
 
-- Connecting the IMU sensor with Arduino.
-- Reading sensor data using Arduino.
+// an MPU9250 object with the MPU-9250 sensor on I2C bus 0 with address 0x68
+MPU9250 IMU(Wire,0x68);
+int status;
+
+void setup() {
+  // serial to display data
+  Serial.begin(115200);
+  while(!Serial) {}
+
+  // start communication with IMU 
+  status = IMU.begin();
+  if (status < 0) {
+    Serial.println("IMU initialization unsuccessful");
+    Serial.println("Check IMU wiring or try cycling power");
+    Serial.print("Status: ");
+    Serial.println(status);
+    while(1) {}
+  }
+}
+
+void loop() {
+  // read the sensor
+  IMU.readSensor();
+  // display the data
+  Serial.print("ax:");
+  Serial.print(IMU.getAccelX_mss(),6);
+  Serial.print("\t");
+  Serial.print("ay:");
+  Serial.print(IMU.getAccelY_mss(),6);
+  Serial.print("\t");
+  Serial.print("az:");
+  Serial.print(IMU.getAccelZ_mss(),6);
+  Serial.print("\t");
+  Serial.print("gx:");
+  Serial.print(IMU.getGyroX_rads(),6);
+  Serial.print("\t");
+  Serial.print("gy:");
+  Serial.print(IMU.getGyroY_rads(),6);
+  Serial.print("\t");
+  Serial.print("gz:");
+  Serial.print(IMU.getGyroZ_rads(),6);
+  Serial.print("\t");
+  Serial.print("mx:");
+  Serial.print(IMU.getMagX_uT(),6);
+  Serial.print("\t");
+  Serial.print("my:");
+  Serial.print(IMU.getMagY_uT(),6);
+  Serial.print("\t");
+  Serial.print("my:");
+  Serial.print(IMU.getMagZ_uT(),6);
+  Serial.print("\t");
+  Serial.print("s:");
+  Serial.println(IMU.getTemperature_C(),6);
+  delay(100);
+}
+```
+
+The code tells us to read the sensor data via the I2C bus (`Wire`) at address `0x68` for every 100 milliseconds. The data is sent to the serial port at a baud rate of `115200`and it is in the form of a comma-separated string. The first 9 values are the **accelerometer**, **gyroscope**, and **magnetometer** data. The last value is the **temperature** in Celsius.
+
+Upload the sketch to the Arduino Uno by clicking the **Upload** button on the top left corner of the Arduino IDE.
+
+[//]: # (put upload process gif here)
+
+Open the serial monitor to see the sensor data. The serial monitor can be opened by clicking the magnifying glass icon on the top right corner of the Arduino IDE.
+
+[//]: # (put serial monitor screenshot here)
 
 ## Node.js and WebSocket Integration
 
