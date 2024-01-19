@@ -10,9 +10,10 @@ In this tutorial, we will build a 3D motion tracker that can visualize the motio
 
 ### IMU sensor
 
-An IMU sensor, or Inertial Measurement Unit sensor is a device that measures the motion, orientation, and environmental conditions of an object. It consists of an **accelerometer**, **gyroscope**, and **magnetometer**. The accelerometer measures the acceleration of the object, the gyroscope measures the angular velocity, and the magnetometer measures the magnetic field. The IMU sensor used in this project is the [MPU-9250](https://invensense.tdk.com/download-pdf/mpu-9250-datasheet/).
+An IMU sensor, or Inertial Measurement Unit sensor is a device that measures the motion, orientation, and environmental conditions of an object. It consists of an **accelerometer**, **gyroscope**, and **magnetometer**. The accelerometer measures the acceleration of the object, the gyroscope measures the angular velocity, and the magnetometer measures the magnetic field. The IMU sensor used in this project is the [MPU-9250](https://invensense.tdk.com/download-pdf/mpu-9250-datasheet/). We will use GY-91 module that contains the MPU-9250 sensor.
 
 [//]: # (put GY-91 device screenshot here)
+![gy-91 sensor module](images/gy-91.png)
 
 ### Arduino board
 
