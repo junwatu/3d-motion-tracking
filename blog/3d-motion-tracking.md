@@ -92,7 +92,7 @@ Please remember to program the Arduino Uno. It needs to be connected to the comp
 
 To read sensor data using from Arduino, we need to porgram the Arduino first. Create a new sketch then copy and paste the following code into the sketch:
 
-```arduino
+```c++
 #include "MPU9250.h"
 
 // an MPU9250 object with the MPU-9250 sensor on I2C bus 0 with address 0x68
