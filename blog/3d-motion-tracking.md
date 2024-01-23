@@ -173,9 +173,15 @@ This data will be parsed by Node.js later.
 
 ## Node.js and WebSocket Integration
 
-Node.js reads the sensor data from the Arduino Uno via the serial port.
+### Read sensor data from Arduino
+
+Node.js reads the sensor data from the Arduino Uno via the serial port. In this project we use the [serialport](https://serialport.io/) library to read the data.
 
 ```js
+import { SerialPort } from 'serialport';
+import { ReadlineParser } from '@serialport/parser-readline';
+import { saveData, getAllData, getDatabyID, info } from './griddbservices.js';
+
 // Serial port setup
 const port = new SerialPort({ path: 'COM5', baudRate: 115200 });
 const parser = port.pipe(new ReadlineParser({ delimiter: '\n' }));
@@ -183,12 +189,12 @@ const parser = port.pipe(new ReadlineParser({ delimiter: '\n' }));
 parser.on('data', (data) => {
  console.log(data);
  const parsedData = parseSensorData(data);
- //save data to the database here
+ await saveData({ sensorData: JSON.stringify(parsedData) });
  broadcastData(JSON.stringify(parsedData));
 });
 ```
 
-The data is parsed and then processed for adjusting the coordinate system and converting the units.
+The data is parsed and then processed for adjusting the coordinate system and converting the units. Make sure to read the sensor data sheet before to understand the units of the sensor data.
 
 ```js
 function parseSensorData(data) {
@@ -221,7 +227,38 @@ function parseSensorData(data) {
 }
 ```
 
-- Setting up a Node.js server.
+The data then `broadcasted` to the web browser via WebSocket and also stored in GridDB for future analysis.
+
+```js
+await saveData({ sensorData: JSON.stringify(parsedData) });
+```
+
+### Websocket
+
+WebSocket is a communication protocol that provides full-duplex communication channels over a single TCP connection. It is used in this project to send the sensor data from Node.js to the web browser in real-time. We use the [ws](https://www.npmjs.com/package/ws) library to implement the WebSocket server in Node.js.
+
+```js
+import express from 'express';
+import { createServer } from 'http';
+import { WebSocketServer, WebSocket } from 'ws';
+
+const app = express();
+const server = createServer(app);
+const wss = new WebSocketServer({ server });
+
+wss.on('connection', (ws) => {
+  console.log('WebSocket client connected');
+  ws.on('close', () => console.log('WebSocket client disconnected'));
+});
+
+const broadcastData = (data) => {
+ wss.clients.forEach((client) => {
+  if (client.readyState === WebSocket.OPEN) {
+   client.send(data);
+  }
+ });
+};
+```
 
 ## Processing and Visualizing Data
 
