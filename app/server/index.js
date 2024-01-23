@@ -64,9 +64,10 @@ function parseSensorData(data) {
 const port = new SerialPort({ path: 'COM5', baudRate: 115200 });
 const parser = port.pipe(new ReadlineParser({ delimiter: '\n' }));
 
-parser.on('data', (data) => {
+parser.on('data', async (data) => {
 	console.log(data);
 	const parsedData = parseSensorData(data);
+	await saveData({ sensorData: JSON.stringify(parsedData) });
 	broadcastData(JSON.stringify(parsedData));
 });
 
