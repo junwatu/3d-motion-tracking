@@ -161,11 +161,66 @@ Upload the sketch to the Arduino Uno by clicking the **Upload** button on the to
 Open the serial monitor to see the sensor data. The serial monitor can be opened by clicking the magnifying glass icon on the top right corner of the Arduino IDE.
 
 [//]: # (put serial monitor screenshot here)
+![arduino serial monitor](images/arduino-serial-monitor.png)
+
+In serial monitor you should see the sensor data in the following format:
+
+```shell
+ax:0 ay:0 az:-9.1 gx:0 gy:0 gz:0 mx:13.0 my:57.1 my:-105.3 s:27.4
+```
+
+This data will be parsed by Node.js later.
 
 ## Node.js and WebSocket Integration
 
+Node.js reads the sensor data from the Arduino Uno via the serial port.
+
+```js
+// Serial port setup
+const port = new SerialPort({ path: 'COM5', baudRate: 115200 });
+const parser = port.pipe(new ReadlineParser({ delimiter: '\n' }));
+
+parser.on('data', (data) => {
+ console.log(data);
+ const parsedData = parseSensorData(data);
+ //save data to the database here
+ broadcastData(JSON.stringify(parsedData));
+});
+```
+The data is parsed and then processed for adjusting the coordinate system and converting the units.
+
+```js
+function parseSensorData(data) {
+ // Parse the data string
+ const sensorValues = data.split('\t').map(val => parseFloat(val.split(':')[1]));
+
+ // The order of the data is ax, ay, az, gx, gy, gz, mx, my, mz
+ const [ax, ay, az, gx, gy, gz, mx, my, mz, s] = sensorValues;
+
+ // Normalize accelerometer data if needed (currently in m/s², convert to g's if necessary)
+ const accel = {
+  x: ax / 1000,
+  y: ay / 1000,
+  z: az / 1000
+ };
+
+ // Gyroscope data is in rad/s, which is what the Madgwick filter expects, so no conversion needed
+ const gyro = { x: gx, y: gy, z: gz };
+
+ // Magnetometer data is in microteslas (uT), convert to Teslas by dividing by 1,000,000 if necessary
+ const mag = {
+  x: mx / 1000000,
+  y: my / 1000000,
+  z: mz / 1000000
+ };
+
+ const temp = { s }
+
+ return { accel, gyro, mag, s };
+}
+```
+
 - Setting up a Node.js server.
-- Establishing WebSocket communication between Arduino and Node.js.
 
 ## Processing and Visualizing Data
 
