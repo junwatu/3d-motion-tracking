@@ -187,6 +187,7 @@ parser.on('data', (data) => {
  broadcastData(JSON.stringify(parsedData));
 });
 ```
+
 The data is parsed and then processed for adjusting the coordinate system and converting the units.
 
 ```js
