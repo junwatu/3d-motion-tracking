@@ -163,7 +163,7 @@ Open the serial monitor to see the sensor data. The serial monitor can be opened
 [//]: # (put serial monitor screenshot here)
 ![arduino serial monitor](images/arduino-serial-monitor.png)
 
-In serial monitor you should see the sensor data in the following format:
+In the serial monitor you should see the sensor data in the following format:
 
 ```shell
 ax:0 ay:0 az:-9.1 gx:0 gy:0 gz:0 mx:13.0 my:57.1 my:-105.3 s:27.4
@@ -192,39 +192,6 @@ parser.on('data', (data) => {
  await saveData({ sensorData: JSON.stringify(parsedData) });
  broadcastData(JSON.stringify(parsedData));
 });
-```
-
-The data is parsed and then processed for adjusting the coordinate system and converting the units. Make sure to read the sensor data sheet before to understand the units of the sensor data.
-
-```js
-function parseSensorData(data) {
- // Parse the data string
- const sensorValues = data.split('\t').map(val => parseFloat(val.split(':')[1]));
-
- // The order of the data is ax, ay, az, gx, gy, gz, mx, my, mz
- const [ax, ay, az, gx, gy, gz, mx, my, mz, s] = sensorValues;
-
- // Normalize accelerometer data if needed (currently in m/s², convert to g's if necessary)
- const accel = {
-  x: ax / 1000,
-  y: ay / 1000,
-  z: az / 1000
- };
-
- // Gyroscope data is in rad/s, which is what the Madgwick filter expects, so no conversion needed
- const gyro = { x: gx, y: gy, z: gz };
-
- // Magnetometer data is in microteslas (uT), convert to Teslas by dividing by 1,000,000 if necessary
- const mag = {
-  x: mx / 1000000,
-  y: my / 1000000,
-  z: mz / 1000000
- };
-
- const temp = { s }
-
- return { accel, gyro, mag, s };
-}
 ```
 
 The data then `broadcasted` to the web browser via WebSocket and also stored in GridDB for future analysis.
@@ -262,11 +229,113 @@ const broadcastData = (data) => {
 
 ## Processing and Visualizing Data
 
-- **Data Processing:**
-  - Processing IMU data in Node.js.
-- **Visualizing with Babylon.js:**
-  - Creating a 3D scene in Babylon.js.
-  - Real-time visualization of the motion data.
+### Data Processing
+
+The data is parsed and then processed for adjusting the coordinate system and converting the units. Make sure to read the sensor data sheet before to understand the units of the sensor data.
+
+```js
+function parseSensorData(data) {
+ // Parse the data string
+ const sensorValues = data.split('\t').map(val => parseFloat(val.split(':')[1]));
+
+ // The order of the data is ax, ay, az, gx, gy, gz, mx, my, mz
+ const [ax, ay, az, gx, gy, gz, mx, my, mz, s] = sensorValues;
+
+ // Normalize accelerometer data if needed (currently in m/s², convert to g's if necessary)
+ const accel = {
+  x: ax / 1000,
+  y: ay / 1000,
+  z: az / 1000
+ };
+
+ // Gyroscope data is in rad/s, which is what the Madgwick filter expects, so no conversion needed
+ const gyro = { x: gx, y: gy, z: gz };
+
+ // Magnetometer data is in microteslas (uT), convert to Teslas by dividing by 1,000,000 if necessary
+ const mag = {
+  x: mx / 1000000,
+  y: my / 1000000,
+  z: mz / 1000000
+ };
+
+ const temp = { s }
+
+ return { accel, gyro, mag, s };
+}
+```
+This parsed data is then sent to the web browser via WebSocket.
+
+### Visualizing with Babylon.js
+
+To visualize the motion data, we use [Babylon.js](https://www.babylonjs.com/), a JavaScript framework for building 3D games and applications with WebGL and WebVR. The HTML is as follows:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>3D Sensor Visualization</title>
+	<script src="https://cdn.babylonjs.com/babylon.js"></script>
+	<style>
+		#renderCanvas {
+			width: 100%;
+			height: 100vh;
+			touch-action: none;
+		}
+	</style>
+</head>
+
+<body>
+	<canvas id="renderCanvas"></canvas>
+	<script>
+		window.addEventListener('DOMContentLoaded', () => {
+			const canvas = document.getElementById('renderCanvas');
+			const engine = new BABYLON.Engine(canvas, true);
+
+			const createScene = () => {
+				const scene = new BABYLON.Scene(engine);
+				const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 10, new BABYLON.Vector3(0, 0, 0), scene);
+				camera.attachControl(canvas, true);
+				new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 1, 0), scene);
+				const box = BABYLON.MeshBuilder.CreateBox("box", { size: 2 }, scene);
+				return { scene, box };
+			};
+
+			const { scene, box } = createScene();
+
+			const ws = new WebSocket('ws://localhost:3000');
+			ws.onmessage = (event) => {
+				const sensorData = JSON.parse(event.data);
+				const { gyro } = sensorData;
+
+				// Update cube rotation with gyro data in radians/s
+				// Assume you're receiving data at a rate of 60Hz (or adjust as per your rate)
+				box.rotation.x += gyro.x / 10; // Update rotation based on gyro data
+				box.rotation.y += gyro.y / 10;
+				box.rotation.z += gyro.z / 10;
+			};
+
+			engine.runRenderLoop(() => {
+				scene.render();
+			});
+
+			window.addEventListener('resize', () => {
+				engine.resize();
+			});
+		});
+	</script>
+</body>
+
+</html>
+```
+
+The code above creates a scene with a camera, light, and a box. The box will be rotated based on the gyroscope data from the IMU sensor. The gyroscope data is received via WebSocket from Node.js.
+
+By default the WebSocket URL run on `localhost` with the port `3000`. You need to change the WebSocket URL to match your Node.js server URL dan change the WebSocket URL in this line:
+
+```js
+const ws = new WebSocket('ws://localhost:3000');
+```
 
 ## Storing Data with GridDB
 
@@ -278,16 +347,6 @@ const broadcastData = (data) => {
 ## Combining the Components
 
 - Detailed workflow of how IMU, Arduino, Node.js, WebSocket, Babylon.js, and GridDB work together in the project.
-
-## Troubleshooting and Common Issues
-
-- Common challenges and their solutions.
-- Debugging tips for each component.
-
-## Conclusion and Further Applications
-
-- Summarize the project's achievements.
-- Discuss potential real-world applications and future extensions.
 
 ## References and Additional Resources
 

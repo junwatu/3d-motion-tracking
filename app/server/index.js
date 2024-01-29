@@ -61,7 +61,7 @@ function parseSensorData(data) {
 }
 
 // Serial port setup
-const port = new SerialPort({ path: 'COM5', baudRate: 115200 });
+const port = new SerialPort({ path: '/dev/ttyACM0', baudRate: 115200 });
 const parser = port.pipe(new ReadlineParser({ delimiter: '\n' }));
 
 parser.on('data', async (data) => {
@@ -76,6 +76,8 @@ port.on('error', (err) => {
 });
 
 const PORT = 3000;
-server.listen(PORT, () => {
+const HOST = 'localhost';
+
+server.listen(PORT, HOST, () => {
 	console.log(`Server running at http://localhost:${PORT}`);
 });
