@@ -27,9 +27,12 @@ The source code for Arduino can be found in the `app/hardware` directory. Please
 
 ## System Architecture
 
-The following diagram shows the system architecture of this project:
-
 [//]: # (put system architecture diagram here)
+![system architecture](images/3d-system-tracking.png)
+
+The architecture illustrates a real-time 3D tracking system involving hardware interfacing and data management. An Arduino Uno with an MPU-9250 sensor collects motion data and sends it to a Node.js server via a serial port connection. Node.js processes the data, performing tasks such as filtering, parsing, and real-time communication. It then interfaces with GridDB, a database used for storing and analyzing the data. 
+
+Additionally, Node.js serves a frontend displaying a 3D cube, which represents the real-time orientation captured by the MPU-9250 sensor. This frontend is a web application that visualizes the sensor data in real time.
 
 ## Hardware Requirements
 
