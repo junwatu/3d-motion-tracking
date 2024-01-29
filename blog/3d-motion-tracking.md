@@ -342,15 +342,30 @@ const ws = new WebSocket('ws://localhost:3000');
 
 ## Storing Data with GridDB
 
-The GridDB is used to store the motion data from the IMU sensor for future analysis. The data is stored in the form of a JSON string.
+The GridDB is used to store the motion data from the IMU sensor for future analysis. The file `app/server/griddbservices.js` is a wrapper for `libs/griddb.js` that contains the GridDB functions. To save data to GridDB as follows:
 
 ```js
 await saveData({ sensorData: JSON.stringify(parsedData) });
 ```
 
+The data is stored in the form of a JSON string. You can look at the `libs/griddb.js` file to see how the data is stored in GridDB.
 
-- **GridDB Setup:**
-  - Instructions for GridDB configuration.
+```js
+function initContainer() {
+	const conInfo = new griddb.ContainerInfo({
+		name: containerName,
+		columnInfoList: [
+			['id', griddb.Type.INTEGER],
+			['data', griddb.Type.STRING],
+		],
+		type: griddb.ContainerType.COLLECTION,
+		rowKey: true,
+	});
+
+	return conInfo;
+}
+```
+
 - **Data Storage and Retrieval:**
   - Code snippets for storing motion data in GridDB and retrieving it.
 
