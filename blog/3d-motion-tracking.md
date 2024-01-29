@@ -6,6 +6,31 @@
 
 In this tutorial, we will build a 3D motion tracker that can visualize the motion of an object in real-time. The motion data is collected from an IMU sensor and Arduino Uno, processed in Node.js, and visualized in Babylon.js. The GridDB is used for data store for future analysis.
 
+## Project Source Code
+
+This project requires  [hardware](#hardware-requirements) and [software](#software-requirements) components. The source code for this project can be found in the following GitHub [repository](https://github.com/junwatu/3d-motion-tracking).
+
+To run the server, you need to install the dependencies first by running the following command:
+
+```shell
+cd app/server
+npm install
+```
+
+Then run the server using the following command:
+
+```shell 
+npm start
+```
+
+The source code for Arduino can be found in the `app/hardware` directory. Please read the [setup the development environment](#setting-up-the-development-environment) section to import the necessary libraries.
+
+## System Architecture
+
+The following diagram shows the system architecture of this project:
+
+[//]: # (put system architecture diagram here)
+
 ## Hardware Requirements
 
 ### IMU sensor
@@ -342,7 +367,9 @@ const ws = new WebSocket('ws://localhost:3000');
 
 ## Storing Data with GridDB
 
-The GridDB is used to store the motion data from the IMU sensor for future analysis. The file `app/server/griddbservices.js` is a wrapper for `libs/griddb.js` that contains the GridDB functions. To save data to GridDB as follows:
+The GridDB is used to store the motion data from the IMU sensor for future analysis. The file `app/server/griddbservices.js` is a wrapper for `libs/griddb.js` that contains the GridDB functions. 
+
+To save parsed sensor data to GridDB, the code is as follows:
 
 ```js
 await saveData({ sensorData: JSON.stringify(parsedData) });
@@ -366,13 +393,21 @@ function initContainer() {
 }
 ```
 
-- **Data Storage and Retrieval:**
-  - Code snippets for storing motion data in GridDB and retrieving it.
+## Data Retrieval from GridDB
 
-## Combining the Components
+To retrieve all data from GridDB, the code is as follows:
 
-- Detailed workflow of how IMU, Arduino, Node.js, WebSocket, Babylon.js, and GridDB work together in the project.
+```js
+app.get('/', async (req, res) => {
+	log.info('Getting all data from GridDB');
+	try {
+		const result = await getAllData();
+		res.json(result);
+	} catch (error) {
+		res.status(500).send('Error getting all data');
+	}
+})
+```
+You can retrieve the data from the browser by accessing the URL `http://localhost:3000/`.
 
-## References and Additional Resources
-
-- Links to external documentation, tutorials, and further readings.
+[//]: # (retrieve all data screenshot)

@@ -14,8 +14,15 @@ const server = createServer(app);
 const wss = new WebSocketServer({ server });
 
 app.use(express.static(path.join(__dirname, './public')));
-app.get('/', (req, res) => {
-	res.send('Hello from Express!');
+
+app.get('/', async (req, res) => {
+	log.info('Getting all data from GridDB');
+	try {
+		const result = await getAllData();
+		res.json(result);
+	} catch (error) {
+		res.status(500).send('Error getting all data');
+	}
 });
 
 wss.on('connection', (ws) => {
