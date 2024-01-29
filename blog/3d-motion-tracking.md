@@ -20,6 +20,7 @@ An IMU sensor, or Inertial Measurement Unit sensor is a device that measures the
 In this project, we use [Arduino Uno](https://docs.arduino.cc/hardware/uno-rev3/) to read the sensor data from the IMU sensor. The Arduino Uno is a microcontroller board based on the ATmega328P. It has 14 digital input/output pins, 6 analog inputs, a 16 MHz quartz crystal, a USB connection, a power jack, an ICSP header, and a reset button.
 
 [//]: # (put Arduino Uno board screenshot here)
+![Arduino Uno](images/arduino-uno.jpg)
 
 ## Software Requirements
 
@@ -331,13 +332,22 @@ To visualize the motion data, we use [Babylon.js](https://www.babylonjs.com/), a
 
 The code above creates a scene with a camera, light, and a box. The box will be rotated based on the gyroscope data from the IMU sensor. The gyroscope data is received via WebSocket from Node.js.
 
-By default the WebSocket URL run on `localhost` with the port `3000`. You need to change the WebSocket URL to match your Node.js server URL dan change the WebSocket URL in this line:
+[//]: # (demo here)
+
+By default the WebSocket URL run on `localhost` with the port `3000`. You need to change the WebSocket URL to match your Node.js server URL and change the code in this line:
 
 ```js
 const ws = new WebSocket('ws://localhost:3000');
 ```
 
 ## Storing Data with GridDB
+
+The GridDB is used to store the motion data from the IMU sensor for future analysis. The data is stored in the form of a JSON string.
+
+```js
+await saveData({ sensorData: JSON.stringify(parsedData) });
+```
+
 
 - **GridDB Setup:**
   - Instructions for GridDB configuration.
