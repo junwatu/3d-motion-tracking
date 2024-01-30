@@ -8,7 +8,7 @@ In this tutorial, we will build a 3D motion tracker that can visualize the motio
 
 ## Project Source Code
 
-This project requires  [hardware](#hardware-requirements) and [software](#software-requirements) components. The source code for this project can be found in the following GitHub [repository](https://github.com/junwatu/3d-motion-tracking).
+The source code for this project can be found in the following GitHub [repository](https://github.com/junwatu/3d-motion-tracking). This project requires  [hardware](#hardware-requirements) and [software](#software-requirements) components.
 
 To run the server, you need to install the dependencies first by running the following command:
 
@@ -23,7 +23,7 @@ Then run the server using the following command:
 npm start
 ```
 
-The Arduino source code can be found in the `app/hardware` directory. To import the necessary libraries, please read the [setup the development environment](#setting-up-the-development-environment) section.
+The Arduino source code can be found in the `app/hardware` directory. To import the necessary libraries, please read the [setup the development environment](#setting-up-the-development-environment) section. 
 
 ## System Architecture
 
