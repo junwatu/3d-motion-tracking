@@ -23,7 +23,7 @@ Then run the server using the following command:
 npm start
 ```
 
-The Arduino source code or sketch can be found in the `app/hardware` directory. You need to program the Arduino Uno first, please read [here](#reading-sensor-data-using-arduino). To import the necessary libraries, please read the [setup the development environment](#setting-up-the-development-environment) section. 
+The Arduino source code or sketch can be found in the `app/hardware` directory. First, you need to program the Arduino Uno. Please read [here](#upload-sketch-to-arduino). Then, to import the necessary libraries, please read the [setup the development environment](#setting-up-the-development-environment) section. 
 
 ## System Architecture
 
@@ -31,7 +31,7 @@ The Arduino source code or sketch can be found in the `app/hardware` directory. 
 
 The architecture illustrates a real-time 3D tracking system involving hardware interfacing and data management. An Arduino Uno with an MPU-9250 sensor collects motion data and sends it to a Node.js server via a serial port connection. Node.js processes the data, performing tasks such as filtering, parsing, and real-time communication. It then interfaces with GridDB, a database used for storing and analyzing the data. 
 
-Additionally, Node.js serves as a frontend displaying a 3D cube, which represents the real-time orientation captured by the MPU-9250 sensor. This frontend is a web application that visualizes the sensor data in real-time.
+Additionally, Node.js serves as a front-end displaying a 3D cube, which represents the real-time orientation captured by the MPU-9250 sensor. This frontend is a web application that visualizes the sensor data in real-time.
 
 ## Hardware Requirements
 
@@ -178,22 +178,26 @@ void loop() {
 
 The code tells us to read the sensor data via the I2C bus (`Wire`) at address `0x68` for every 100 milliseconds. The data is sent to the serial port at a baud rate of `115200`and it is in the form of a comma-separated string. The first 9 values are the **accelerometer**, **gyroscope**, and **magnetometer** data. The last value is the **temperature** in Celsius.
 
-Upload the sketch to the Arduino Uno by clicking the **Upload** button on the top left corner of the Arduino IDE (Arrow icon).
+### Upload Sketch to Arduino
+
+To program Arduino Uno, upload the sketch to the Arduino Uno by clicking the **Upload** button on the top left corner of the Arduino IDE (Arrow icon).
 
 [//]: # (put upload process gif here)
 ![upload sketch](images/upload-sketch.png)
+
+### Monitor Sensor Data
 
 Open the serial monitor to see the sensor data. The serial monitor can be opened by clicking the magnifying glass icon on the top right corner of the Arduino IDE.
 
 ![arduino serial monitor](images/arduino-serial-monitor.png)
 
-In the serial monitor you should see the sensor data in the following format:
+In the serial monitor, you should see the sensor data in the following format:
 
 ```shell
 ax:0 ay:0 az:-9.1 gx:0 gy:0 gz:0 mx:13.0 my:57.1 my:-105.3 s:27.4
 ```
 
-You can also using CLI serial communication tools such as [minicom](https://www.man7.org/linux/man-pages/man1/minicom.1.html) to read the sensor data. 
+You can also use CLI serial communication tools such as [minicom](https://www.man7.org/linux/man-pages/man1/minicom.1.html) to read the sensor data. 
 
 Using Ubuntu Linux, you can install minicom using the following command:
 
