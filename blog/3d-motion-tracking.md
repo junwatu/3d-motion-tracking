@@ -180,10 +180,12 @@ The code tells us to read the sensor data via the I2C bus (`Wire`) at address `0
 
 ### Upload Sketch to Arduino
 
-To program Arduino Uno, upload the sketch to the Arduino Uno by clicking the **Upload** button on the top left corner of the Arduino IDE (Arrow icon).
+To program the Arduino Uno, upload the sketch by clicking the **Upload** button at the top left corner of the Arduino IDE (Arrow icon).
 
 [//]: # (put upload process gif here)
 ![upload sketch](images/upload-sketch.png)
+
+It is recommended that you verify the sketch program before uploading it to the Arduino Uno. You can verify the sketch by clicking the tick mark icon.
 
 ### Monitor Sensor Data
 
