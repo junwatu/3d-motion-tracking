@@ -431,7 +431,7 @@ app.get('/data', async (req, res) => {
 	}
 })
 ```
-You can retrieve the data from the browser by accessing the URL `http://localhost:3000/`.
+You can retrieve the data from the browser by accessing the URL `http://localhost:3000/data`.
 
 [//]: # (retrieve all data screenshot)
 ![get all data](images/griddb-data.png)
