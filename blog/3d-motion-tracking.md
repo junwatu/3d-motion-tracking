@@ -178,9 +178,10 @@ void loop() {
 
 The code tells us to read the sensor data via the I2C bus (`Wire`) at address `0x68` for every 100 milliseconds. The data is sent to the serial port at a baud rate of `115200`and it is in the form of a comma-separated string. The first 9 values are the **accelerometer**, **gyroscope**, and **magnetometer** data. The last value is the **temperature** in Celsius.
 
-Upload the sketch to the Arduino Uno by clicking the **Upload** button on the top left corner of the Arduino IDE.
+Upload the sketch to the Arduino Uno by clicking the **Upload** button on the top left corner of the Arduino IDE (Arrow icon).
 
 [//]: # (put upload process gif here)
+![upload sketch](images/upload-sketch.png)
 
 Open the serial monitor to see the sensor data. The serial monitor can be opened by clicking the magnifying glass icon on the top right corner of the Arduino IDE.
 
