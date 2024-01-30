@@ -361,6 +361,11 @@ To visualize the motion data, we use [Babylon.js](https://www.babylonjs.com/), a
 The code above creates a scene with a camera, light, and a box. The box will be rotated based on the gyroscope data from the IMU sensor. The gyroscope data is received via WebSocket from Node.js.
 
 [//]: # (demo here)
+<div align="center">
+   <img src="images/3D-Tracking-System.gif"/>
+   <br/>
+</div>
+
 
 By default the WebSocket URL run on `localhost` with the port `3000`. You need to change the WebSocket URL to match your Node.js server URL and change the code in this line:
 
