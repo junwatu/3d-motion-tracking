@@ -110,7 +110,7 @@ The connections are as follows:
 | A4 (SDA)        | SDA               |
 | A5 (SCL)        | SCL               |
 
-Please remember to program the Arduino Uno. It needs to be connected to the computer using the USB cable.
+To program the Arduino Uno, you need to connect it to the computer using the USB cable.
 
 ### Reading sensor data using Arduino
 
