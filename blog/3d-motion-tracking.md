@@ -23,7 +23,7 @@ Then run the server using the following command:
 npm start
 ```
 
-The Arduino source code or sketch can be found in the `app/hardware` directory. You need to program the Arduino Uno first, read [here](). To import the necessary libraries, please read the [setup the development environment](#setting-up-the-development-environment) section. 
+The Arduino source code or sketch can be found in the `app/hardware` directory. You need to program the Arduino Uno first, please read [here](#reading-sensor-data-using-arduino). To import the necessary libraries, please read the [setup the development environment](#setting-up-the-development-environment) section. 
 
 ## System Architecture
 
