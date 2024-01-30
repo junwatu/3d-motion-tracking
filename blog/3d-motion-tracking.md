@@ -27,7 +27,6 @@ The Arduino source code can be found in the `app/hardware` directory. To import 
 
 ## System Architecture
 
-[//]: # (put system architecture diagram here)
 ![system architecture](images/3d-system-tracking.png)
 
 The architecture illustrates a real-time 3D tracking system involving hardware interfacing and data management. An Arduino Uno with an MPU-9250 sensor collects motion data and sends it to a Node.js server via a serial port connection. Node.js processes the data, performing tasks such as filtering, parsing, and real-time communication. It then interfaces with GridDB, a database used for storing and analyzing the data. 
@@ -40,14 +39,12 @@ Additionally, Node.js serves as a frontend displaying a 3D cube, which represent
 
 An IMU sensor, or Inertial Measurement Unit sensor, is a device that measures the motion, orientation, and environmental conditions of an object. It consists of an **accelerometer**, **gyroscope**, and **magnetometer**. The accelerometer measures the acceleration of the object, the gyroscope measures the angular velocity, and the magnetometer measures the magnetic field. The IMU sensor used in this project is the [MPU-9250](https://invensense.tdk.com/download-pdf/mpu-9250-datasheet/). We will use the GY-91 module that contains the MPU-9250 sensor.
 
-[//]: # (put GY-91 device screenshot here)
 ![gy-91 sensor module](images/GY-91.png)
 
 ### Arduino board
 
 In this project, we use [Arduino Uno](https://docs.arduino.cc/hardware/uno-rev3/) to read the sensor data from the IMU sensor. The Arduino Uno is a microcontroller board based on the ATmega328P. It has 14 digital input/output pins, 6 analog inputs, a 16 MHz quartz crystal, a USB connection, a power jack, an ICSP header, and a reset button.
 
-[//]: # (put Arduino Uno board screenshot here)
 ![Arduino Uno](images/arduino-uno.jpg)
 
 ## Software Requirements
@@ -90,7 +87,6 @@ There is no need to provide stand-alone power supply because the IMU sensor modu
 
 ### Setting up the development environment
 
-[//]: # (Clearly brief explanation of the development environment setup)
 Open the Arduino IDE and import the `MPU9250.zip` library package into the IDE. The package can be downloaded from [here](https://github.com/junwatu/3d-motion-tracking/raw/main/app/hardware/MPU9250.zip).
 
 To import the library, go to `Sketch > Include Library > Add ZIP Library...` and select the `MPU9250.zip` file.
@@ -103,7 +99,6 @@ To import the library, go to `Sketch > Include Library > Add ZIP Library...` and
 
 The IMU sensor is connected to the Arduino Uno using the I2C interface. The device interconnection is shown in the following diagram:
 
-[//]: # (put device interconnection diagram here)
 ![imu arduino breadboard](images/imu-arduino-uno.png)
 
 The connections are as follows:
@@ -189,7 +184,6 @@ Upload the sketch to the Arduino Uno by clicking the **Upload** button on the to
 
 Open the serial monitor to see the sensor data. The serial monitor can be opened by clicking the magnifying glass icon on the top right corner of the Arduino IDE.
 
-[//]: # (put serial monitor screenshot here)
 ![arduino serial monitor](images/arduino-serial-monitor.png)
 
 In the serial monitor you should see the sensor data in the following format:
@@ -198,7 +192,21 @@ In the serial monitor you should see the sensor data in the following format:
 ax:0 ay:0 az:-9.1 gx:0 gy:0 gz:0 mx:13.0 my:57.1 my:-105.3 s:27.4
 ```
 
-This data will be parsed by Node.js later.
+You can also using CLI serial communication tools such as [minicom](https://www.man7.org/linux/man-pages/man1/minicom.1.html) to read the sensor data. 
+
+Using Ubuntu Linux, you can install minicom using the following command:
+
+```shell
+sudo apt install minicom
+```
+
+Then run the following command to read the sensor data:
+
+```shell
+minicom -D /dev/ttyACM0 -b 115200
+```
+
+Just make sure to close the Arduino IDE serial monitor before running the command above.
 
 ## Node.js and WebSocket Integration
 
@@ -228,6 +236,8 @@ The data is then `broadcasted` to the web browser via WebSocket and also stored 
 ```js
 await saveData({ sensorData: JSON.stringify(parsedData) });
 ```
+
+As previously mentioned, you need to close the existing serial port connection, such as the Arduino IDE serial monitor or any program that uses the serial port, such as minicom, so the Node.js server will be able to read the sensor data.
 
 ### Websocket
 
@@ -360,12 +370,10 @@ To visualize the motion data, we use [Babylon.js](https://www.babylonjs.com/), a
 
 The code above creates a scene with a camera, a light, and a box. The box will be rotated based on the gyroscope data from the IMU sensor. The gyroscope data is received via WebSocket from Node.js.
 
-[//]: # (demo here)
 <div align="center">
    <img src="images/3D-Tracking-System.gif"/>
    <br/>
 </div>
-
 
 By default, the WebSocket URL runs on `localhost` with the port `3000`. You need to change the WebSocket URL to match your Node.js server URL and change the code in this line:
 
@@ -406,7 +414,7 @@ function initContainer() {
 To retrieve all data from GridDB, the code is as follows:
 
 ```js
-app.get('/', async (req, res) => {
+app.get('/data', async (req, res) => {
 	log.info('Getting all data from GridDB');
 	try {
 		const result = await getAllData();
@@ -419,3 +427,4 @@ app.get('/', async (req, res) => {
 You can retrieve the data from the browser by accessing the URL `http://localhost:3000/`.
 
 [//]: # (retrieve all data screenshot)
+![get all data](images/griddb-data.png)
