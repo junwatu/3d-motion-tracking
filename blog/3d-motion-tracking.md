@@ -16,14 +16,17 @@ To run the server, you need to install the dependencies first by running the fol
 cd app/server
 npm install
 ```
-
 Then run the server using the following command:
 
 ```shell 
 npm start
 ```
 
+The system will run on the demo version by default using recorded actual sensor data. Go to the URL `http://localhost:3000`, and the demo data will be fed to the browser every second.
+
 The Arduino source code or sketch can be found in the `app/hardware` directory. First, you need to program the Arduino Uno. Please read [here](#upload-sketch-to-arduino). Then, to import the necessary libraries, please read the [setup the development environment](#setting-up-the-development-environment) section. 
+
+Please note: It would be best to restart the Node.js server every time you plug the Arduino into a new USB port, as the server cannot detect it automatically.
 
 ## System Architecture
 
