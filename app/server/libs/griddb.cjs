@@ -1,6 +1,6 @@
 const griddb = require('griddb-node-api');
 
-const containerName = 'SenorDataStorage';
+const containerName = 'SensorDataStorage';
 
 const initStore = async () => {
 	const factory = griddb.StoreFactory.getInstance();

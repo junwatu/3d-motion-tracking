@@ -7,8 +7,11 @@ import path from 'path';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { saveData, getAllData, getDatabyID, info } from './griddbservices.js';
+import fs from "node:fs/promises";
+import 'dotenv/config';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+
 const app = express();
 const server = createServer(app);
 const wss = new WebSocketServer({ server });
@@ -71,10 +74,22 @@ function parseSensorData(data) {
 const port = new SerialPort({ path: '/dev/ttyACM0', baudRate: 115200 });
 const parser = port.pipe(new ReadlineParser({ delimiter: '\n' }));
 
+if (process.env.TRACKING_DEMO === "OK") {
+	(async () => {
+		try {
+			await broadcastDemoData();
+		} catch (error) {
+			console.log(error);
+		}
+	})();
+}
+
 parser.on('data', async (data) => {
 	console.log(data);
+	console.log("Live data reading...");
 	const parsedData = parseSensorData(data);
-	await saveData({ sensorData: JSON.stringify(parsedData) });
+	//await saveData({ sensorData: JSON.stringify(parsedData) });
+	console.log(parsedData)
 	broadcastData(JSON.stringify(parsedData));
 });
 
@@ -88,3 +103,29 @@ const HOST = 'localhost';
 server.listen(PORT, HOST, () => {
 	console.log(`Server running at http://localhost:${PORT}`);
 });
+
+async function broadcastDemoData() {
+	try {
+		console.log("DEMO version...");
+
+		const data = await fs.readFile(path.join(__dirname, './data.json'), { encoding: 'utf8' });
+		const parsedData = JSON.parse(data).results;
+
+		if (parsedData.length > 0) {
+			parsedData.forEach(async (item) => {
+				broadcastData(item.data);
+				await delay(500);
+			});
+		} else {
+			console.log("DEMO data is empty");
+		}
+	} catch (error) {
+		console.error("Error reading or parsing DEMO data:", error);
+	}
+	setTimeout(broadcastDemoData, 1000);
+}
+
+function delay(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
